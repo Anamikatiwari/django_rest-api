@@ -13,6 +13,7 @@ urlpatterns = [
     path('recipes/<int:id>/', views.recipe_detail),
     path('product/', views.product_list),
     path('product/<int:id>/', views.product_detail),
-    path('api', include(router.urls)),
+    path('api/', include(router.urls)),
+    path('recipe_c/', views.RecipeListView.as_view()),
    
 ]

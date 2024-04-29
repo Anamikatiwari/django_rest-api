@@ -1,31 +1,51 @@
 from django.shortcuts import render
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .models import Recipe, Product
 from rest_framework.viewsets import ModelViewSet
-from .serializers import RecipeSerializer, ProductSerializer
+from .serializers import RecipeSerializer, ProductSerializer,RecipeListSerializer
+from rest_framework.views  import APIView
 
 # Create your views here.
 
 
 class RecipeViewSet(ModelViewSet):
+    permission_classes=[IsAuthenticated]
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
 
 
 class ProductViewSet(ModelViewSet):
+    permission_classes=[IsAuthenticated]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
 
 
+class RecipeListView(APIView):
+    permission_classes=[IsAuthenticated]
+    def get(delf, request):
+        title= request.query_params.get('title')
+        print(title)
+        if title is not None:
+            recipes = Recipe.objects.filter(title__icontains=title)
+        else:
+            recipes = Recipe.objects.all()
+
+        serializer= RecipeListSerializer(recipes, many=True)
+        return Response(serializer.data)
+
+
 
 
 @api_view()
+@permission_classes([IsAuthenticated])
 def hello(request):
     return Response({
         "data": "Hello, world!"
     })
+    
     
     
     
@@ -75,7 +95,8 @@ def recipe_detail(request, id):
         return Response(status= 204)
         
    
-    
+   
+  
 @api_view(['GET','POST'])   
 def product_list(request):
     try:

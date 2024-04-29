@@ -6,6 +6,14 @@ class RecipeSerializer(serializers.ModelSerializer):
         model = Recipe
         fields= '__all__'
         
+        
+class RecipeListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields= [
+            "title", "description"
+        ]        
+        
    
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
