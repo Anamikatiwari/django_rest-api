@@ -15,5 +15,8 @@ urlpatterns = [
     path('product/<int:id>/', views.product_detail),
     path('api/', include(router.urls)),
     path('recipe_c/', views.RecipeListView.as_view()),
+    path('recipe_c/<int:id>', views.RecipeDetailView.as_view()),
+    
+    
    
 ]

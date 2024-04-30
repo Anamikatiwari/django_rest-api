@@ -13,7 +13,7 @@ from rest_framework.views  import APIView
 class RecipeViewSet(ModelViewSet):
     permission_classes=[IsAuthenticated]
     queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
+    serializer_class = RecipeSerializer 
 
 
 class ProductViewSet(ModelViewSet):
@@ -35,6 +35,60 @@ class RecipeListView(APIView):
 
         serializer= RecipeListSerializer(recipes, many=True)
         return Response(serializer.data)
+    
+    
+        
+class RecipeDetailView(APIView):
+    # permission_classes=[IsAuthenticated]
+    def get(self, request, *args, **kwargs):
+        id = kwargs.get("id")
+        print(id)
+        try:
+            recipe = Recipe.objects.get(id=id)
+        except Recipe.DoesNotExist:
+                return Response({
+                    "msg": "No such recipe exists"
+                }, status=404)
+                    
+            
+        serializer= RecipeSerializer(recipe)
+        return Response(serializer.data)  
+    
+    def put(self,request,*args,**kwargs):
+        id=self.kwargs.get('id')
+        recipe=Recipe.objects.get(id=id)
+        recipe_serializer=RecipeSerializer(recipe,data=request.data)
+        if recipe_serializer.is_valid():
+            recipe_serializer.save()
+            return Response(recipe_serializer.data)
+        else:
+            print(recipe_serializer.errors)
+            return Response(recipe_serializer.errors)
+        
+    def delete(self,request,*args,**kwargs):
+        id=kwargs.get('id')
+        try:
+            recipe=Recipe.objects.get(id=id)
+        except Recipe.DoesNotExist:
+            return Response(status=404)
+        recipe.delete()
+        return Response(status=204)
+    
+    def  post(self,request,*args,**kwargs):
+        recipe_serializer=RecipeSerializer(data=request.data)
+        if recipe_serializer.is_valid():
+            recipe_serializer.save()
+            return Response(recipe_serializer.data,status=201)
+        else:
+            return Response(recipe_serializer.errors,status=400)
+
+    
+            
+
+        
+    
+        
+
 
 
 

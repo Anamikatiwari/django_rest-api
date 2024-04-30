@@ -12,7 +12,19 @@ class RecipeListSerializer(serializers.ModelSerializer):
         model = Recipe
         fields= [
             "title", "description"
-        ]        
+        ]       
+ 
+# class RecipeUpdateSerializer(serializers.ModelSerializer) :
+#     class Meta:
+#         model= Recipe  
+#         fields= '__all__'   
+        
+
+# class RecipeDeleteSerializer(serializers.ModelSerializer) :
+#     class Meta:
+#         model= Recipe  
+#         fields= '__all__'          
+        
         
    
 class ProductSerializer(serializers.ModelSerializer):
