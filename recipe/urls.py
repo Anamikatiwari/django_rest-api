@@ -2,6 +2,7 @@
 from django.urls import path, include
 from recipe import views
 from rest_framework.routers import DefaultRouter
+
 router = DefaultRouter()
 router.register(r'recipeviewset', views.RecipeViewSet, basename='recipeviewset') 
 router.register(r'productviewset', views.ProductViewSet, basename='productviewset')
