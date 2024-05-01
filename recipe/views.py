@@ -1,11 +1,12 @@
 from django.shortcuts import render
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .models import Recipe, Product
 from rest_framework.viewsets import ModelViewSet
 from .serializers import RecipeSerializer, ProductSerializer,RecipeListSerializer
 from rest_framework.views  import APIView
+from rest_framework.authentication import TokenAuthentication
 
 # Create your views here.
 
@@ -82,28 +83,19 @@ class RecipeDetailView(APIView):
         else:
             return Response(recipe_serializer.errors,status=400)
 
-    
-            
-
-        
-    
-        
-
-
-
 
 
 @api_view()
 @permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
 def hello(request):
     return Response({
         "data": "Hello, world!"
     })
     
     
-    
-    
 @api_view(['GET','POST'])
+@permission_classes([IsAuthenticated])
 def list_recipe(request):  
     if request.method =="POST":
             print(request.data)
