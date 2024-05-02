@@ -19,5 +19,6 @@ urlpatterns = [
     path('recipe_c/<int:id>', views.RecipeDetailView.as_view()),
     
     
+    
    
 ]

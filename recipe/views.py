@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .models import Recipe, Product
 from rest_framework.viewsets import ModelViewSet
-from .serializers import RecipeSerializer, ProductSerializer,RecipeListSerializer
+from .serializers import RecipeSerializer, ProductSerializer,RecipeListSerializer,RecipeCreateSerializer
 from rest_framework.views  import APIView
 from rest_framework.authentication import TokenAuthentication
 
@@ -26,16 +26,23 @@ class ProductViewSet(ModelViewSet):
 
 class RecipeListView(APIView):
     permission_classes=[IsAuthenticated]
-    def get(delf, request):
+    def get(self, request):
         title= request.query_params.get('title')
         print(title)
         if title is not None:
-            recipes = Recipe.objects.filter(title__icontains=title)
+            recipes = Recipe.objects.filter(title__icontains=title, user= request.user)
         else:
-            recipes = Recipe.objects.all()
+            recipes = Recipe.objects.filter(user=request.user)
 
         serializer= RecipeListSerializer(recipes, many=True)
         return Response(serializer.data)
+    
+    def post(self,request):
+        recipe_serializer=RecipeCreateSerializer(data=request.data)
+        recipe_serializer.is_valid(raise_exception=True)
+        recipe_serializer.save(user=request.user)
+        return Response(recipe_serializer.data,status=201)
+        
     
     
         
@@ -60,7 +67,7 @@ class RecipeDetailView(APIView):
         recipe=Recipe.objects.get(id=id)
         recipe_serializer=RecipeSerializer(recipe,data=request.data)
         if recipe_serializer.is_valid():
-            recipe_serializer.save()
+            recipe_serializer.save(updated_by=request.user)
             return Response(recipe_serializer.data)
         else:
             print(recipe_serializer.errors)
@@ -75,13 +82,7 @@ class RecipeDetailView(APIView):
         recipe.delete()
         return Response(status=204)
     
-    def  post(self,request,*args,**kwargs):
-        recipe_serializer=RecipeSerializer(data=request.data)
-        if recipe_serializer.is_valid():
-            recipe_serializer.save()
-            return Response(recipe_serializer.data,status=201)
-        else:
-            return Response(recipe_serializer.errors,status=400)
+
 
 
 
@@ -93,24 +94,32 @@ def hello(request):
         "data": "Hello, world!"
     })
     
+     
     
 @api_view(['GET','POST'])
 @permission_classes([IsAuthenticated])
-def list_recipe(request):  
-    if request.method =="POST":
-            print(request.data)
-            recipe_serializer= RecipeSerializer(data=request.data)
-            if recipe_serializer.is_valid(raise_exception=True):
-                recipe_serializer.save()
-                return Response(recipe_serializer.data)
-            else:
-                print(recipe_serializer.errors)
-                return Response(recipe_serializer.errors)    
+@authentication_classes([TokenAuthentication])
+def list_recipe(request):
+    if request.method=='POST':
+        print(request.data)
+        recipe_serializer=RecipeCreateSerializer(data=request.data)
         
-    recipes= Recipe.objects.all()
-    serializer= RecipeSerializer(recipes, many= True)
-    response_data= serializer.data
-    return Response(response_data)
+        if recipe_serializer.is_valid(raise_exception=True):
+            recipe_serializer.save(user=request.user)
+            # validated_data=recipe_serializer.validated_data
+            # recipe=Recipe(user=request.user,**validated_data)
+            # recipe.save()
+            # recipe_serializer=RecipeCreateSerializer(recipe)
+            return Response(recipe_serializer.data,status=201)     
+        else:
+            print(recipe_serializer.errors)
+            return Response(recipe_serializer.errors)
+    
+    recipes=Recipe.objects.all()
+    serializer=RecipeSerializer(recipes,many=True)
+    return Response(serializer.data,status=201)
+
+
         
     
 @api_view(['GET', 'DELETE', 'PUT'])
@@ -164,6 +173,8 @@ def product_list(request):
     serializer= ProductSerializer(products, many= True)
     response_data= serializer.data
     return Response(response_data) 
+
+
     
      
 @api_view(['GET', 'DELETE', 'PUT'])    
