@@ -32,6 +32,8 @@ class RecipeListSerializer(serializers.ModelSerializer):
             'rating',
             'user',
             'updated_by'
+
+           
         ]
         
                      
