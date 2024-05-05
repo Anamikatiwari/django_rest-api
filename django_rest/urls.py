@@ -26,6 +26,7 @@ urlpatterns = [
     path('recipe/', include('recipe.urls')),
     path('api-token-auth/', views.obtain_auth_token),
     path('', include('courseapp.urls')),
+     path("__debug__/", include("debug_toolbar.urls")),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,

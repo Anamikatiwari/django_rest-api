@@ -12,7 +12,8 @@ from .pagination import LargeResultsSetPagination
 # Create your views here.
 
 class StudentListAPIView(ListAPIView):
-    queryset = Student.objects.all()
+    queryset = Student.objects.select_related("Course")
+    # queryset = Student.objects.all()
     serializer_class = StudentListSerializer
     pagination_class = LargeResultsSetPagination
     
