@@ -5,8 +5,19 @@ from .models import Course, Student
 from .serializers import CourseSerializer, StudentSerializer,CourseListSerializer,StudentListSerializer
 from rest_framework.views  import APIView
 from django.shortcuts import get_object_or_404
+from rest_framework.generics import ListAPIView 
+from .pagination import LargeResultsSetPagination 
+# from rest_framework import generics
 
 # Create your views here.
+
+class StudentListAPIView(ListAPIView):
+    queryset = Student.objects.all()
+    serializer_class = StudentListSerializer
+    pagination_class = LargeResultsSetPagination
+    
+    
+    
 
 
 class CourseListView(APIView):
@@ -31,8 +42,8 @@ class CourseListView(APIView):
     
 class CourseDetailView(APIView):
      
-     def get(self, request, *args, **kwargs):
-         id = kwargs.get("id")
+     def get(self, request,id, *args, **kwargs):
+        #  id = kwargs.get("id")
          print(id)
          try:
              course = Course.objects.get(id=id)
@@ -68,24 +79,16 @@ class StudentListView(APIView):
      
      
 class DisplayStudentView(APIView):
-     http_method_names=['GET']
-     
-     def get(self,request ) :
-          user = request.user
-          #print (user)
-          
-          if isinstance(user,Student):
-               student_info = Student.objects.filter(student_id=user)  
-               
-               data={}
-               data["first_name"]=user.first_name
-               data["last_name"]=user.last_name
-               data["Email"]=user.email
-               data["phone"]=user.phone
-               data["gender"]=user.gender
-               data["age"]=user.age
-               data["Course"]=user.Course
-               data["image"]=user.image
+   def get(self,request,id,*args,**kwargs):
+        # id=kwargs.get('id')
+        print(id)
+        try:
+            course=Course.objects.get(id=id)
+            students_in_course=course.Students.all()
+        except Course.DoesNotExist:
+            return Response({"error":"Course not found"},status=404)
+        student_serializer=StudentListSerializer(students_in_course,many=True)
+        return Response(student_serializer.data)
             
             
                
