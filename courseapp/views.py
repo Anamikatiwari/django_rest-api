@@ -12,8 +12,10 @@ from .pagination import LargeResultsSetPagination
 # Create your views here.
 
 class StudentListAPIView(ListAPIView):
-    queryset = Student.objects.select_related("Course")
+    #selected_relater is used for foreignkey and prefetch_related for many to many opyimization
+    # queryset = Student.objects.select_related("Course").prefetch_related("subjects")  
     # queryset = Student.objects.all()
+    queryset = Student.objects.select_related("Course")
     serializer_class = StudentListSerializer
     pagination_class = LargeResultsSetPagination
     
