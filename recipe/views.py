@@ -11,6 +11,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.http import HttpResponse
 from .forms import ContactForm
+from django.template.loader import render_to_string
 from rest_framework.response import Response
 
 # Create your views here.
@@ -228,6 +229,8 @@ def mail_user(request):
     message = f'Hi  thank you for registering in geeksforgeeks, you have logged in from{ip_address}.'
     email_from = settings.EMAIL_HOST_USER
     recipient_list = ['sujanrokka2000@gmail.com']
+    html_message=render_to_string('email.html',{'ip_address':ip_address, 'contact':ContactForm},request)
+
     # html_message= "<h1>Welcome to our Site</h1> <p>You have logged in from:</p> <p><strong>{ip_address}</strong></p> <a href=\"http://google.com\" style=\"text-decoration:none; padding:10px; background-color:cyan; color:white;\">Visit Google</a>"
     from_email="tiwarianimika200@gmail.com"
     send_mail( subject=subject, message=message, html_message=html_message, from_email=email_from, recipient_list=recipient_list )
@@ -237,6 +240,7 @@ def mail_user(request):
     
 def handle_contact(request):
     if request.method == 'POST':
+        ip_address= get_client_ip(request)
         form = ContactForm(request.POST)
         if form.is_valid():
             contact=form.save()
@@ -244,12 +248,14 @@ def handle_contact(request):
             message= request.POST.get('query')
             from_email='tiwarianimika2000@gmail.com'
             recipient_list=['sujanrokka2000@gmail.com']
-            send_mail(subject, message, from_email, recipient_list)
+            html_message=render_to_string('email.html',{'ip_address':ip_address, 'contact':contact},request)
+
+            send_mail(subject, message, from_email, recipient_list,html_message=html_message)
             return HttpResponse("Email sent successfully!")
              
     else:
         form = ContactForm(request.POST)
-    return render(request, 'contact_form.html', {'form': form})
+        return render(request, 'contact_form.html', {'form': form})
     
         
 
