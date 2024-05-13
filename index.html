@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Student Data</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #studentData {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            transition: box-shadow 0.3s ease;
+        }
+
+        #studentData:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        #studentData ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #studentData ul li {
+            margin-bottom: 15px;
+        }
+
+        #studentData ul li strong {
+            font-weight: bold;
+            color: #333;
+        }
+
+        #studentData img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Styling for list items */
+        .list-item {
+            background-color: #f3f3f3;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .list-item:hover {
+            background-color: #e0e0e0;
+        }
+
+        /* Colorful headings */
+        .section-title {
+            color: #ff6f61;
+            font-size: 24px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Vibrant button */
+        .button {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<h2 class="section-title">Student Information</h2>
+
+<div id="studentData">
+    <!-- Data will be displayed here -->
+</div>
+
+<script>
+    
+    async function fetchAndDisplayData() {
+        try {
+            const response = await fetch('http://127.0.0.1:8000/students_p/');
+            const data = await response.json();
+
+            let full_html = "";
+            data.results.forEach(student => {
+
+                let html = "<ul class='list-item'>";
+                html += "<li><strong>First Name:</strong> " + student.first_name + "</li>";
+                html += "<li><strong>Last Name:</strong> " + student.last_name + "</li>";
+                html += "<li><strong>Email:</strong> " + student.email + "</li>";
+                html += "<li><strong>Phone:</strong> " + student.phone + "</li>";
+                html += "<li><strong>Gender:</strong> " + student.gender[0][1] + "</li>"; // Assuming you want to display the gender's label
+                html += "<li><strong>Age:</strong> " + student.age + "</li>";
+                html += "<li><strong>Course:</strong> " + student.Course + "</li>";
+                html += "<li><strong>Image:</strong> <img src='" + student.image + "' alt='Student Image'></li>";
+                html += "</ul>";
+
+                full_html += html;
+
+            })
+
+            document.getElementById('studentData').innerHTML = full_html;
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
+
+    fetchAndDisplayData();
+</script>
+
+</body>
+</html>

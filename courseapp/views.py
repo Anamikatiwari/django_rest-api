@@ -7,9 +7,33 @@ from rest_framework.views  import APIView
 from django.shortcuts import get_object_or_404
 from rest_framework.generics import ListAPIView 
 from .pagination import LargeResultsSetPagination 
+from django.core.mail import send_mail
+from django.conf import settings
+from django.http import HttpResponse
 # from rest_framework import generics
 
 # Create your views here.
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip= x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')   
+    return ip 
+
+
+def mail_user(request):
+    ip_address= get_client_ip(request)
+    subject = 'welcome to GFG world'
+    message = f'Hi  thank you for registering in geeksforgeeks, you have logged in from{ip_address}.'
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = ['sujanrokka2000@gmail.com']
+    html_message= "<h1>Welcome to our Site</h1> <p>You have logged in from:</p> <p><strong>{ip_address}</strong></p> <a href=\"http://google.com\" style=\"text-decoration:none; padding:10px; background-color:cyan; color:white;\">Visit Google</a>"
+
+
+    send_mail( subject=subject, message=message, html_message=html_message, from_email=email_from, recipient_list=recipient_list )
+    return HttpResponse()
 
 class StudentListAPIView(ListAPIView):
     #selected_relater is used for foreignkey and prefetch_related for many to many opyimization
