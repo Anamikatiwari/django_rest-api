@@ -29,10 +29,11 @@ def mail_user(request):
     message = f'Hi  thank you for registering in geeksforgeeks, you have logged in from{ip_address}.'
     email_from = settings.EMAIL_HOST_USER
     recipient_list = ['sujanrokka2000@gmail.com']
-    html_message= "<h1>Welcome to our Site</h1> <p>You have logged in from:</p> <p><strong>{ip_address}</strong></p> <a href=\"http://google.com\" style=\"text-decoration:none; padding:10px; background-color:cyan; color:white;\">Visit Google</a>"
-
-
+    # html_message= "<h1>Welcome to our Site</h1> <p>You have logged in from:</p> <p><strong>{ip_address}</strong></p> <a href=\"http://google.com\" style=\"text-decoration:none; padding:10px; background-color:cyan; color:white;\">Visit Google</a>"
+    from_email="tiwarianimika200@gmail.com"
     send_mail( subject=subject, message=message, html_message=html_message, from_email=email_from, recipient_list=recipient_list )
+    
+    
     return HttpResponse()
 
 class StudentListAPIView(ListAPIView):

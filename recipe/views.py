@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -7,8 +7,14 @@ from rest_framework.viewsets import ModelViewSet
 from .serializers import RecipeSerializer, ProductSerializer,RecipeListSerializer,RecipeCreateSerializer
 from rest_framework.views  import APIView
 from rest_framework.authentication import TokenAuthentication
+from django.core.mail import send_mail
+from django.conf import settings
+from django.http import HttpResponse
+from .forms import ContactForm
+from rest_framework.response import Response
 
 # Create your views here.
+
 
 
 class RecipeViewSet(ModelViewSet):
@@ -203,6 +209,50 @@ def product_detail(request, id):
         product = Product.objects.get(id=id)
         product.delete()
         return Response(status= 204)
+    
+    
+    
+    
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip= x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')   
+    return ip 
+
+
+def mail_user(request):
+    ip_address= get_client_ip(request)
+    subject = 'welcome to GFG world'
+    message = f'Hi  thank you for registering in geeksforgeeks, you have logged in from{ip_address}.'
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = ['sujanrokka2000@gmail.com']
+    # html_message= "<h1>Welcome to our Site</h1> <p>You have logged in from:</p> <p><strong>{ip_address}</strong></p> <a href=\"http://google.com\" style=\"text-decoration:none; padding:10px; background-color:cyan; color:white;\">Visit Google</a>"
+    from_email="tiwarianimika200@gmail.com"
+    send_mail( subject=subject, message=message, html_message=html_message, from_email=email_from, recipient_list=recipient_list )
+        
+    
+    
+    
+def handle_contact(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            contact=form.save()
+            subject= "New Query at: Recipe app"
+            message= request.POST.get('query')
+            from_email='tiwarianimika2000@gmail.com'
+            recipient_list=['sujanrokka2000@gmail.com']
+            send_mail(subject, message, from_email, recipient_list)
+            return HttpResponse("Email sent successfully!")
+             
+    else:
+        form = ContactForm(request.POST)
+    return render(request, 'contact_form.html', {'form': form})
+    
+        
+
         
     
       

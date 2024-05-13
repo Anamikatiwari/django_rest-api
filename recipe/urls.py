@@ -17,8 +17,8 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('recipe_c/', views.RecipeListView.as_view()),
     path('recipe_c/<int:id>', views.RecipeDetailView.as_view()),
-    
-    
+    path('send_mail/', views.mail_user),
+    path('contact/',views.handle_contact, name='contact'),
     
    
 ]
