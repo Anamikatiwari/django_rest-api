@@ -2,6 +2,7 @@
 from django.urls import path, include
 from recipe import views
 from rest_framework.routers import DefaultRouter
+from.views import ContactAPIView
 
 router = DefaultRouter()
 router.register(r'recipeviewset', views.RecipeViewSet, basename='recipeviewset') 
@@ -19,6 +20,8 @@ urlpatterns = [
     path('recipe_c/<int:id>', views.RecipeDetailView.as_view()),
     path('send_mail/', views.mail_user),
     path('contact/',views.handle_contact, name='contact'),
-    
+
+    path('contacts/', ContactAPIView.as_view(), name='contact_api'),
+
    
 ]

@@ -2,9 +2,9 @@ from django.shortcuts import render, redirect
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from .models import Recipe, Product
+from .models import Recipe, Product,Contact
 from rest_framework.viewsets import ModelViewSet
-from .serializers import RecipeSerializer, ProductSerializer,RecipeListSerializer,RecipeCreateSerializer
+from .serializers import ContactSerializer, RecipeSerializer, ProductSerializer,RecipeListSerializer,RecipeCreateSerializer
 from rest_framework.views  import APIView
 from rest_framework.authentication import TokenAuthentication
 from django.core.mail import send_mail
@@ -13,6 +13,9 @@ from django.http import HttpResponse
 from .forms import ContactForm
 from django.template.loader import render_to_string
 from rest_framework.response import Response
+from rest_framework import status
+
+
 
 # Create your views here.
 
@@ -256,38 +259,30 @@ def handle_contact(request):
     else:
         form = ContactForm(request.POST)
         return render(request, 'contact_form.html', {'form': form})
-    
-        
 
+
+class ContactAPIView(APIView):
+    def post(self, request, format=None):
+        ip_address = get_client_ip(request)
+        serializer = ContactSerializer(data=request.data)
+        if serializer.is_valid():
+            contact = Contact.objects.create(**serializer.validated_data)
+            subject = "New Query at: Recipe app"
+            message = serializer.validated_data['query']
+            from_email = 'tiwarianimika2000@gmail.com'
+            recipient_list = ['sujanrokka2000@gmail.com']
+            html_message = render_to_string('email.html', {'ip_address': ip_address, 'contact': contact}, request)
+
+            send_mail(subject, message, from_email, recipient_list, html_message=html_message)
+            return Response({"detail": "Email sent successfully!"}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"detail": "Invalid form data"}, status=status.HTTP_400_BAD_REQUEST)
         
     
       
     
     
     
-    # data =[
-        
-    # ]
-    
-    # for recipe in recipes:
-    #     recipe_object={
-            
-    #         'id':recipe.id,
-    #         'title':recipe.title,
-    #         'description':recipe.description,
-    #         'time_required':recipe.time_required,
-            
-            
-    #     }
-    #     print(recipe_object)
-    #     data.append(
-    #         recipe_object
-    #     )
-    # print(data)
-    # Response_data={
-    #     'recipes':data
-    # }
-    # return Response(Response_data)
-        
+
         
     
