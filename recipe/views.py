@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from .models import Recipe, Product,Contact
+from .models import Recipe, Product,Contact, Ingredient
 from rest_framework.viewsets import ModelViewSet
 from .serializers import ContactSerializer, RecipeSerializer, ProductSerializer,RecipeListSerializer,RecipeCreateSerializer
 from rest_framework.views  import APIView
@@ -14,6 +14,7 @@ from .forms import ContactForm
 from django.template.loader import render_to_string
 from rest_framework.response import Response
 from rest_framework import status
+import csv
 
 
 
@@ -31,6 +32,22 @@ class ProductViewSet(ModelViewSet):
     permission_classes=[IsAuthenticated]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    
+    
+def upload_ingredient_csv(request):
+    if request.method =='POST':
+        ingredient_file= request.FILES['ingredient_file']
+        decoded_file= ingredient_file.read().decode('utf-8').splitlines()
+        # for line in decoded_file:
+        #     print(line)
+        reader = csv.DictReader(decoded_file)
+        for row in reader:
+            print(row['Name'])
+            Ingredient.objects.create(name=row['Name'])
+            
+        return HttpResponse('File uploaded')
+    return render(request, 'upload_ingredient_csv.html')    
+      
 
 
 
@@ -277,6 +294,10 @@ class ContactAPIView(APIView):
             return Response({"detail": "Email sent successfully!"}, status=status.HTTP_201_CREATED)
         else:
             return Response({"detail": "Invalid form data"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+        
+        
         
     
       
