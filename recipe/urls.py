@@ -22,7 +22,9 @@ urlpatterns = [
     path('contact/',views.handle_contact, name='contact'),
 
     path('contacts/', ContactAPIView.as_view(), name='contact_api'),
-    path('uploadcsv/', views.upload_ingredient_csv, name='upload_ingredient_csv')
+    path('uploadcsv/', views.upload_ingredient_csv, name='upload_ingredient_csv'),
+    path('downloadrcsv/',views.export_recipe, name='downloadrcsv'),
+    
 
    
 ]

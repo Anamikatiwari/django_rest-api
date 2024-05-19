@@ -15,10 +15,25 @@ from django.template.loader import render_to_string
 from rest_framework.response import Response
 from rest_framework import status
 import csv
-
+from .resources import RecipeResource
+import datetime
 
 
 # Create your views here.
+
+def export_recipe(request):
+    recipes= Recipe.objects.filter(user=request.user)
+    recipe_data= RecipeResource()
+    dataset= recipe_data.export(recipes)
+    date= datetime.datetime.now()
+    response = HttpResponse(dataset.csv,content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="recipes-{date}.csv"' 
+    
+    # writer = csv.writer(response)
+    # writer.writerow(['Recipe Name', 'Recipe Description', 'Recipe Image', 'Recipe Ingredients',  'Recipe Time'])
+    return response
+    
+                    
 
 
 
