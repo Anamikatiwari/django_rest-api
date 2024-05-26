@@ -24,6 +24,8 @@ urlpatterns = [
     path('contacts/', ContactAPIView.as_view(), name='contact_api'),
     path('uploadcsv/', views.upload_ingredient_csv, name='upload_ingredient_csv'),
     path('downloadrcsv/',views.export_recipe, name='downloadrcsv'),
+    path('dashboard/',views.dashboard, name='dashboard'),
+    
     
 
    
