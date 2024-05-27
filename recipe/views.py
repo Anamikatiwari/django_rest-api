@@ -22,7 +22,7 @@ import datetime
 # Create your views here.
 
 def dashboard(request):
-    return render(request, 'starter.html')
+    return render(request, 'starter.html') 
     
 
 def export_recipe(request):
